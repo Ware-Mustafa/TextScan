@@ -1,0 +1,592 @@
+﻿@{
+    ViewData["Title"] = "Metin Algılama | Gelişmiş OCR Çözümü";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --dark: #2b2d42;
+            --light: #f8f9fa;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --error: #f44336;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7ff;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+            .header h1 {
+                color: var(--primary);
+                font-size: 2.5rem;
+                margin-bottom: 0.5rem;
+                font-weight: 700;
+            }
+
+            .header p {
+                color: #666;
+                font-size: 1.1rem;
+                max-width: 700px;
+                margin: 0 auto;
+            }
+
+        .ocr-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin: 2rem auto;
+            max-width: 800px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .ocr-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+            }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .card-body {
+            padding:10rem;
+        }
+
+        .upload-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 3rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: rgba(255, 255, 255, 0.7);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .upload-area:hover {
+                border-color: var(--primary);
+                background-color: rgba(67, 97, 238, 0.05);
+            }
+
+            .upload-area.active {
+                border-color: var(--primary);
+                background-color: rgba(67, 97, 238, 0.05);
+            }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover .upload-icon {
+            transform: scale(1.1);
+        }
+
+        .upload-text h3 {
+            margin: 0;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .upload-text p {
+            color: #6b7280;
+            margin: 0.5rem 0 0;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .preview-container {
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            text-align: center;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            display: block;
+        }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
+            }
+
+            .btn:active {
+                transform: translateY(0);
+            }
+
+            .btn i {
+                margin-right: 8px;
+            }
+
+        .result-container {
+            margin-top: 2rem;
+            border-radius: 12px;
+            background-color: var(--light);
+            padding: 2rem;
+            display: none;
+            border: 1px solid #e5e7eb;
+        }
+
+        .result-title {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .result-text {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            line-height: 1.7;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 150px;
+        }
+
+        .download-btn {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .copy-btn {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .clear-btn {
+            background-color: var(--error);
+            color: white;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+
+            .feature-card:hover {
+                transform: translateY(-10px);
+            }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(58, 12, 163, 0.1));
+            width: 80px;
+            height: 80px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-size: 1.2rem;
+        }
+
+        .feature-desc {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 2rem 1rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(67, 97, 238, 0.2);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @@keyframes spin {
+            0%
+
+        {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+
+        }
+
+        @@media (max-width: 768px) {
+            .header h1
+
+        {
+            font-size: 2rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .action-btn {
+            width: 100%;
+            max-width: 250px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-text-height"></i> Gelişmiş Metin Algılama</h1>
+            <p>Görsellerden metin çıkarmanın en kolay yolu. Yüksek doğruluk oranıyla dilediğiniz görseldeki yazıları anında metne dönüştürün.</p>
+        </div>
+
+        <div class="ocr-card">
+            <div class="card-header">
+                <h2><i class="fas fa-camera"></i> Görsel Yükle</h2>
+            </div>
+
+            <div class="card-body">
+                <form asp-action="ExtractText" method="post" enctype="multipart/form-data" id="ocrForm">
+                    <div class="upload-container">
+                        <input type="file" id="fileInput" name="imageFile" accept="image/*" class="file-input" required>
+                        <label for="fileInput" class="upload-area" id="uploadArea">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="upload-text">
+                                <h3>Görselinizi sürükleyip bırakın</h3>
+                                <p>veya tıklayarak dosya seçin</p>
+                            </div>
+                        </label>
+                        <div class="preview-container" id="previewContainer">
+                            <img id="previewImage" class="preview-image" src="#" alt="Önizleme">
+                        </div>
+                    </div>
+
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>Metin çıkarılıyor, lütfen bekleyin...</p>
+                    </div>
+
+                    <button type="submit" class="btn" id="submitBtn">
+                        <i class="fas fa-magic"></i> Metni Çıkar
+                    </button>
+                </form>
+
+                @if (ViewBag.ExtractedText != null)
+                {
+                    <div class="result-container" id="resultContainer" style="display: block;">
+                        <div class="result-title">
+                            <span><i class="fas fa-align-left"></i> Algılanan Metin</span>
+                        </div>
+                        <div class="result-text" id="resultText">
+                            @ViewBag.ExtractedText
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn download-btn" id="downloadBtn">
+                                <i class="fas fa-download"></i> İndir
+                            </button>
+                            <button class="action-btn copy-btn" id="copyBtn">
+                                <i class="fas fa-copy"></i> Kopyala
+                            </button>
+                            <button class="action-btn clear-btn" id="clearBtn">
+                                <i class="fas fa-trash"></i> Temizle
+                            </button>
+                        </div>
+                    </div>
+                }
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="result-container" style="display: block; background-color: #ffeeee; border-color: var(--error);">
+                        <div class="result-title" style="color: var(--error);">
+                            <span><i class="fas fa-exclamation-triangle"></i> Hata</span>
+                        </div>
+                        <div class="result-text">
+                            @ViewBag.Error
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3 class="feature-title">Yüksek Hız</h3>
+                <p class="feature-desc">Gelişmiş algoritmalarımız sayesinde görsellerinizden saniyeler içinde metin çıkarın.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-language"></i>
+                </div>
+                <h3 class="feature-title">Çoklu Dil Desteği</h3>
+                <p class="feature-desc">Türkçe başta olmak üzere 100'den fazla dilde metin tanıma desteği.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 class="feature-title">Güvenli ve Özel</h3>
+                <p class="feature-desc">Yüklediğiniz görseller işlendikten sonra otomatik olarak silinir, gizliliğiniz korunur.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© @DateTime.Now.Year Gelişmiş Metin Algılama - Tüm hakları saklıdır</p>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultText = document.getElementById('resultText');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const ocrForm = document.getElementById('ocrForm');
+
+        // File input change event
+        fileInput.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                const reader = new FileReader();
+
+                // Update upload area text
+                uploadArea.querySelector('.upload-text h3').textContent = file.name;
+                uploadArea.querySelector('.upload-text p').textContent =
+                    `${(file.size / 1024).toFixed(2)} KB | ${file.type}`;
+
+                // Show preview for images
+                if (file.type.startsWith('image/')) {
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewContainer.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    previewContainer.style.display = 'none';
+                }
+
+                uploadArea.classList.add('active');
+            }
+        });
+
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            uploadArea.classList.add('highlight');
+        }
+
+        function unhighlight() {
+            uploadArea.classList.remove('highlight');
+        }
+
+        uploadArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+
+            // Trigger change event manually
+            const event = new Event('change');
+            fileInput.dispatchEvent(event);
+        }
+
+        // Form submission
+        ocrForm.addEventListener('submit', function(e) {
+            if (!fileInput.files.length) {
+                e.preventDefault();
+                alert('Lütfen bir görsel seçin!');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+        });
+
+        // Download button
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', function() {
+                const text = resultText.innerText;
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'metin-algilama-sonucu.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        // Copy button
+        if (copyBtn) {
+            copyBtn.addEventListener('click', function() {
+                const text = resultText.innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Kopyalandı!';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+        }
+
+        // Clear button
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function() {
+                fileInput.value = '';
+                uploadArea.querySelector('.upload-text h3').textContent = 'Görselinizi sürükleyip bırakın';
+                uploadArea.querySelector('.upload-text p').textContent = 'veya tıklayarak dosya seçin';
+                previewContainer.style.display = 'none';
+                resultContainer.style.display = 'none';
+                uploadArea.classList.remove('active');
+            });
+        }
+    </script>
+</body>
+</html>

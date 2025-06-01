@@ -1,0 +1,185 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HumanityScan</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Flag Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" />
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f8fc;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+        }
+
+        .navbar-brand {
+            color: white;
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+
+            .navbar-brand::before {
+                content: "";
+                display: inline-block;
+                width: 30px;
+                height: 30px;
+                background-color: rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+                margin-right: 12px;
+            }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        footer {
+            background-color: #1e3c72;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 1.5rem 0;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* Language Selector Styles */
+        .language-selector {
+            margin-left: auto;
+        }
+
+        .language-dropdown {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 6px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .language-dropdown:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+        .dropdown-menu {
+            min-width: 120px;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <span class="navbar-brand">HumanityScan</span>
+
+                <div class="language-selector">
+                    <div class="dropdown">
+                        <button class="language-dropdown dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="flag-icon flag-icon-us"></span> English
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')"><span class="flag-icon flag-icon-us"></span> English</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('tr')"><span class="flag-icon flag-icon-tr"></span> Türkçe</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('de')"><span class="flag-icon flag-icon-de"></span> Deutsch</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')"><span class="flag-icon flag-icon-fr"></span> Français</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('es')"><span class="flag-icon flag-icon-es"></span> Español</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('ru')"><span class="flag-icon flag-icon-ru"></span> Русский</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('ar')"><span class="flag-icon flag-icon-sa"></span> العربية</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        // Dil değiştirme fonksiyonu
+        function changeLanguage(lang) {
+            // Seçilen dili cookie'ye kaydet (1 yıl geçerli)
+            document.cookie = `preferred_language=${lang}; path=/; max-age=${365 * 24 * 60 * 60}`;
+
+            // Sayfayı yenile
+            location.reload();
+        }
+
+        // Sayfa yüklendiğinde mevcut dili kontrol et
+        document.addEventListener('DOMContentLoaded', function() {
+            const languageCookie = document.cookie.split('; ').find(row => row.startsWith('preferred_language='));
+            const currentLanguage = languageCookie ? languageCookie.split('=')[1] : 'en';
+
+            // Dropdown'ta seçili dili göster
+            const dropdownButton = document.getElementById('languageDropdown');
+            switch(currentLanguage) {
+                case 'tr':
+                    dropdownButton.innerHTML = '<span class="flag-icon flag-icon-tr"></span> Türkçe';
+                    break;
+                case 'de':
+                    dropdownButton.innerHTML = '<span class="flag-icon flag-icon-de"></span> Deutsch';
+                    break;
+                case 'fr':
+                    dropdownButton.innerHTML = '<span class="flag-icon flag-icon-fr"></span> Français';
+                    break;
+                case 'es':
+                    dropdownButton.innerHTML = '<span class="flag-icon flag-icon-es"></span> Español';
+                    break;
+                case 'ru':
+                    dropdownButton.innerHTML = '<span class="flag-icon flag-icon-ru"></span> Русский';
+                    break;
+                case 'ar':
+                    dropdownButton.innerHTML = '<span class="flag-icon flag-icon-sa"></span> العربية';
+                    break;
+                default:
+                    dropdownButton.innerHTML = '<span class="flag-icon flag-icon-us"></span> English';
+            }
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
